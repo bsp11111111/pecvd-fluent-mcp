@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pecvd-fluent-mcp"
+version = "0.1.0"
+description = "Local Fluent 2024 R1 bridge and PECVD baseline preparation tools"
+requires-python = ">=3.10,<3.13"
+dependencies = ["mcp==1.29.0", "ansys-fluent-core==0.26.1"]
+
+[project.scripts]
+pecvd-mcp = "pecvd_mcp.server:main"
+pecvd-check = "pecvd_mcp.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["pecvd_mcp*"]
+
+[tool.setuptools.package-data]
+pecvd_mcp = ["baseline.json"]

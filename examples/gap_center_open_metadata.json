@@ -1,0 +1,21 @@
+{
+  "nodes": 3325,
+  "cells": 3168,
+  "faces": 6492,
+  "boundary_face_counts": {
+    "interior": 6180,
+    "axis": 24,
+    "wafer": 120,
+    "focus_ring": 12,
+    "showerhead_inlet": 60,
+    "blocked_showerhead": 72,
+    "outlet": 24
+  },
+  "minimum_cell_area_m2": 7.812499999994803e-07,
+  "native_Fluent_mesh_check": "not_yet_run",
+  "geometry": "gap_only_connection_test",
+  "dimensions_m": {
+    "radial": 0.165,
+    "axial": 0.015
+  }
+}

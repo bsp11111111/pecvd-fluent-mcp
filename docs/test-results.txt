@@ -1,0 +1,24 @@
+test_accept_official_version_enum (test_core.CoreTests.test_accept_official_version_enum) ... ok
+test_bridge_lifecycle_limits_and_license_failure (test_core.CoreTests.test_bridge_lifecycle_limits_and_license_failure) ... ok
+test_flux_conversion_and_annular_mean (test_core.CoreTests.test_flux_conversion_and_annular_mean) ... ok
+test_plasma_table_is_only_schema_validation (test_core.CoreTests.test_plasma_table_is_only_schema_validation) ... ok
+test_refuse_overwrite_and_bad_grid (test_core.CoreTests.test_refuse_overwrite_and_bad_grid) ... ok
+test_reject_bad_flux_or_density (test_core.CoreTests.test_reject_bad_flux_or_density) ... ok
+test_sandbox_paths (test_core.CoreTests.test_sandbox_paths) ... ok
+test_sccm_mass_molar_conversion (test_core.CoreTests.test_sccm_mass_molar_conversion) ... ok
+test_three_meshes_and_conserved_total_inlet_flow (test_core.CoreTests.test_three_meshes_and_conserved_total_inlet_flow) ... ok
+test_wrong_solver_version_is_closed (test_core.CoreTests.test_wrong_solver_version_is_closed) ... ok
+test_real_stdio_discovery_and_calls (test_mcp_protocol.MCPProtocolTests.test_real_stdio_discovery_and_calls) ... /tmp/pecvd-clean-env/lib/python3.12/site-packages/pydantic_settings/sources/utils.py:51: IncompleteFieldDefinitionWarning: Field 'lifespan' has an incomplete definition: its annotation contains an unresolved forward reference, so settings sources may fail to correctly resolve its value. Call `model_rebuild()` on the model where the field is defined, once all the referenced types are defined.
+  warnings.warn(  # noqa: B028  (called from many sources at differing depths, so no stacklevel is correct)
+Processing request of type ListToolsRequest
+Processing request of type CallToolRequest
+Processing request of type CallToolRequest
+Processing request of type CallToolRequest
+Processing request of type CallToolRequest
+ok
+test_241_is_supported_and_setting_paths_exist (test_sdk_contract.SDKContractTests.test_241_is_supported_and_setting_paths_exist) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 2.806s
+
+OK
