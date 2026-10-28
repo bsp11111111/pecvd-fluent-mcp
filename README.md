@@ -8,6 +8,8 @@
 
 下载后完整解压，在包含 `01_Install.cmd` 的目录开始操作；无需下载单独的源代码文件。
 
+**已经完成安装和环境检测、准备使用 Codex 桌面版的用户，直接从第二节继续。** 也可阅读 [Codex 桌面版接入步骤](docs/Codex桌面版接入步骤.md)。已经安装成功时，无需为了修改客户端配置重新下载、解压或搬动工程。
+
 适用你的环境：ANSYS 2024 R1 可以正常打开，尚未配置 MCP。版本 0.1.0，2026-10-28。
 
 **本包是可运行的本地接入代码、简化网格与课题基准资料。当前交付尚未在你的电脑上运行 Fluent，也没有生成等离子体分布、沉积速率预测或图 4 的验证结果。** 本机安装并连接 MCP 客户端后，客户端中的助手才能调用你电脑上的求解器。本对话的云环境没有到你电脑的连接。
@@ -24,43 +26,53 @@
 
 固定旧版 PyFluent 是为了兼容 2024 R1：开发时核实 `0.26.1` 的版本枚举包含 `24.1`，而 `0.43.0` 已不包含。不要把安装命令改成无版本限制的最新版。
 
-## 二、选一个支持本地 MCP 的客户端
+## 二、使用 Codex 桌面版接入本地 MCP
 
-一个可选入口是 **Claude Desktop Windows 桌面版**。需自行安装并登录有权使用的客户端；账号权限和功能以其当前版本为准。本接入包不包含任何账号或订阅。
+使用安装在 Fluent 所在 Windows 电脑上的 Codex 桌面版，并选择在该 Windows 环境运行的**本地会话**。云端或 WSL/Linux 会话不能直接使用下面的 Windows Python 路径。当前聊天云环境不会因为你在电脑上启动 MCP 就自动得到本地工具。
 
-在支持本地 STDIO MCP 的客户端中添加服务：
+### 2.1 修改 Codex 配置文件
 
-- 名称：`pecvd-fluent`。
-- 启动命令：本工程 `.venv\Scripts\python.exe` 的完整路径。
-- 参数：`-m pecvd_mcp.server`，这是两个参数，不是一个含空格的参数。
-- 环境变量：按 `mcp-config.generated.json` 中生成的实际路径填写。
+打开默认的用户配置文件 `%USERPROFILE%\.codex\config.toml`。可以在资源管理器地址栏输入 `%USERPROFILE%\.codex`，用文本编辑器打开 `config.toml`。若使用了自定义 Codex 配置目录，以 Codex 实际使用的配置文件为准。
 
-对使用 JSON 配置的 Claude Desktop，通常可在“设置 → 开发者 → 编辑配置”打开配置文件；Windows 常见位置为 `%APPDATA%\Claude\claude_desktop_config.json`。把生成文件中的 `pecvd-fluent` 服务合并到已有 `mcpServers`，保留你原来的其他服务。完全退出并重启客户端。
+保留其他配置；若文件已有 `[mcp_servers.pecvd-fluent]` 及其 `.env`，替换这两个区块，避免重复定义。没有这两段时再在文件末尾追加。
 
-Cursor／VS Code 等支持 MCP 的客户端也可使用相同启动命令，配置格式以各自界面为准。**普通聊天网页不会因为在电脑上启动本包就自动获得本地工具。** 必须在实际支持本地 MCP 的客户端中建立连接。
+以下配置使用本次 Windows 检测截图中的真实工程目录。路径中的两个 `pecvd-fluent-mcp-main` 都要保留：
 
-安装生成的配置会像下面这样，但不要照抄示例盘符，应使用你生成文件里的真实路径：
+```toml
+[mcp_servers.pecvd-fluent]
+command = 'E:\新建文件夹 (2)\pecvd-fluent-mcp-main\pecvd-fluent-mcp-main\.venv\Scripts\python.exe'
+args = ["-m", "pecvd_mcp.server"]
+startup_timeout_sec = 60
+tool_timeout_sec = 600
 
-```json
-{
-  "mcpServers": {
-    "pecvd-fluent": {
-      "command": "C:\\PECVD\\pecvd-fluent-mcp\\.venv\\Scripts\\python.exe",
-      "args": ["-m", "pecvd_mcp.server"],
-      "env": {
-        "PECVD_WORKSPACE": "C:\\PECVD\\pecvd-fluent-mcp\\runs",
-        "PECVD_PACKAGE_ROOT": "C:\\PECVD\\pecvd-fluent-mcp"
-      }
-    }
-  }
-}
+[mcp_servers.pecvd-fluent.env]
+PECVD_WORKSPACE = 'E:\新建文件夹 (2)\pecvd-fluent-mcp-main\pecvd-fluent-mcp-main\runs'
+PECVD_PACKAGE_ROOT = 'E:\新建文件夹 (2)\pecvd-fluent-mcp-main\pecvd-fluent-mcp-main'
 ```
 
-`Start_MCP.cmd` 是另一种启动入口，供支持命令脚本的客户端使用；双击后等待输入是正常的，它不是带按钮的应用程序。MCP 本包只用 STDIO，不需要公网 IP、开放端口或远程桌面密码。
+若以后搬动工程或在其他电脑安装，要改成新的真实路径。`command` 是本工程虚拟环境里的 Python，不是 `fluent.exe`。截图中 Fluent 已识别为 `E:\Program Files\ANSYS Inc\v241\fluent\ntbin\win64\fluent.exe`，无需再用它替换 Codex 的启动命令。
+
+**Codex 使用 TOML 配置。安装脚本生成的 `mcp-config.generated.json` 是其他兼容 JSON 配置客户端的参考，不能原样粘贴进 Codex 的 `config.toml`。**
+
+### 2.2 重启并检查工具是否可调用
+
+保存后完全退出并重启 Codex，在本地会话输入：
+
+> 请列出 pecvd-fluent 的可用工具，并实际调用 check_environment，返回检测结果。
+
+应能发现本包工具并返回 Windows、Python 版本、依赖、真实 Fluent 路径及工程目录。只有显示代码或复述工具名，不等于实际工具调用成功。
+
+此时返回 `phase: disconnected`、`license_verified: false` 可以是正常的：尚未启动本桥管理的 Fluent 进程，还没有检验本次许可证。不能据此判断安装失败；实际启动在第三节进行。
+
+### 2.3 使用其他客户端时
+
+Claude Desktop、Cursor／VS Code 等支持本地 MCP 的客户端也可以使用工程内 `.venv\Scripts\python.exe`，参数为两个字符串 `-m`、`pecvd_mcp.server`，环境变量和上面一致。请按对应客户端的配置格式填写；兼容 `mcpServers` JSON 的客户端可参考 `mcp-config.generated.json`。
+
+`Start_MCP.cmd` 是另一种启动入口，供支持命令脚本的客户端使用；双击后等待输入是正常的，它不是带按钮的应用程序。由 Codex 按配置启动即可，不需要另外手动双击启动 MCP。MCP 本包只用 STDIO，不需要公网 IP、开放端口或远程桌面密码。
 
 ## 三、连接后的第一条指令
 
-把下面这段发给已接入 MCP 的客户端助手：
+第二节的实际工具调用通过后，把下面这段发给已接入 MCP 的 Codex 本地会话：
 
 > 使用 pecvd-fluent 工具。先 check_environment，再 read_paper_baseline。创建一个新项目 first_check_01，生成 baseline 网格，启动 Fluent 2024 R1 的二维双精度界面，载入并检查网格。读 mesh-check.trn，确认没有负体积和拓扑错误后，配置非反应连接测试，初始化，先迭代 25 步并保存 case/data。检查日志，不要把该测试称为等离子体或沉积验证，不要覆盖旧项目。
 
